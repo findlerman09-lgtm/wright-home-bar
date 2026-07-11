@@ -77,6 +77,7 @@ loadScript('ingredient-catalog-v4.js')
   .then(()=>window.WHB_V5_READY)
   .then(()=>loadScript('smart-inventory-v4.js'))
   .then(()=>loadScript('discovery-v5.js'))
-  .then(()=>{if(window.refreshAll)refreshAll();if(window.renderSync)renderSync();console.info(`Wright Home Bar v5 added ${window.WHB_V5_ADDED||0} recipes.`)})
+  .then(()=>loadScript('release-badge-v5.js'))
+  .then(()=>{if(window.refreshAll)refreshAll();if(window.renderSync)renderSync();if(window.installReleaseBadge)installReleaseBadge();console.info(`Wright Home Bar v5 added ${window.WHB_V5_ADDED||0} recipes.`)})
   .catch(e=>console.error('Wright Home Bar v5 load failed',e));
 })();
