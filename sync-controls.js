@@ -24,7 +24,7 @@ function syncPayload(){
   const rows=syncRows();
   return {
     format:'wright-home-bar-inventory-sync',
-    version:2,
+    version:3,
     exported:new Date().toISOString(),
     instructions:'Upload this file to ChatGPT and ask it to update the Wright Home Bar GitHub inventory. owned, stock, opened, refrigerated and pantry_assumption are authoritative.',
     summary:{
@@ -68,8 +68,15 @@ window.exportSyncJson=exportSyncJson;window.exportSyncCsv=exportSyncCsv;window.c
 const originalSwitch=window.switchView;window.switchView=function(id){originalSwitch(id);if(id==='sync')renderSync()};
 $('#exportSyncJson')?.addEventListener('click',exportSyncJson);$('#exportSyncCsv')?.addEventListener('click',exportSyncCsv);$('#copySyncJson')?.addEventListener('click',copySyncJson);$('#refreshSync')?.addEventListener('click',renderSync);
 installRecipeToggle();
-function loadScript(src){return new Promise((resolve,reject)=>{if(document.querySelector(`script[src^="${src}"]`))return resolve();const s=document.createElement('script');s.src=src+'?v=4';s.onload=resolve;s.onerror=reject;document.body.appendChild(s)})}
-function loadStyle(href){if(document.querySelector(`link[href^="${href}"]`))return;const l=document.createElement('link');l.rel='stylesheet';l.href=href+'?v=4';document.head.appendChild(l)}
+function loadScript(src){return new Promise((resolve,reject)=>{if(document.querySelector(`script[src^="${src}"]`))return resolve();const s=document.createElement('script');s.src=src+'?v=5';s.onload=resolve;s.onerror=reject;document.body.appendChild(s)})}
+function loadStyle(href){if(document.querySelector(`link[href^="${href}"]`))return;const l=document.createElement('link');l.rel='stylesheet';l.href=href+'?v=5';document.head.appendChild(l)}
 loadStyle('styles-v4.css');
-loadScript('ingredient-catalog-v4.js').then(()=>loadScript('data-adjunct-recipes-v4.js')).then(()=>loadScript('smart-inventory-v4.js')).then(()=>loadScript('discovery-v4.js')).then(()=>{if(window.refreshAll)refreshAll();if(window.renderSync)renderSync()}).catch(e=>console.error('Wright Home Bar v4 load failed',e));
+loadScript('ingredient-catalog-v4.js')
+  .then(()=>loadScript('data-adjunct-recipes-v4.js'))
+  .then(()=>loadScript('expansion-data-v5.js'))
+  .then(()=>window.WHB_V5_READY)
+  .then(()=>loadScript('smart-inventory-v4.js'))
+  .then(()=>loadScript('discovery-v5.js'))
+  .then(()=>{if(window.refreshAll)refreshAll();if(window.renderSync)renderSync();console.info(`Wright Home Bar v5 added ${window.WHB_V5_ADDED||0} recipes.`)})
+  .catch(e=>console.error('Wright Home Bar v5 load failed',e));
 })();
