@@ -1,4 +1,5 @@
 (()=>{
+const chunks=window.WHB_RECIPE_CHUNKS||[],latest=chunks[chunks.length-1]||[];if(typeof DATA!=='undefined'&&Array.isArray(DATA.recipes)){const names=new Set(DATA.recipes.map(r=>r.name));let next=Math.max(0,...DATA.recipes.map(r=>Number(r.id)||0))+1;latest.forEach(r=>{if(!names.has(r.name)){DATA.recipes.push({...r,id:next++});names.add(r.name)}})}
 const recentKey='whb_discovery_recent_v4',prefsKey='whb_discovery_prefs_v4';
 const loadLocal=(k,d)=>{try{return JSON.parse(localStorage.getItem(k)||JSON.stringify(d))}catch{return d}};
 let recent=loadLocal(recentKey,[]),prefs=loadLocal(prefsKey,{availability:'make',base:'',mood:'',difficulty:'',history:'untried'});
