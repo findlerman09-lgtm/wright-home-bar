@@ -26,7 +26,15 @@ window.WHB_V5_READY=(async()=>{
   }
   window.WHB_INGREDIENT_CATALOG=catalog;
   const existing=new Set(DATA.recipes.map(r=>norm(r.name)));
-  let next=Math.max(0,...DATA.recipes.map(r=>Number(r.id)||0))+1,added=0;
+  let next=Math.max(0,...DATA.recipes.map(r=>Number(r.id)||0))+1;
+  let adjunctAdded=0,added=0;
+  for(const recipe of (window.WHB_RECIPE_CHUNKS||[]).flat()){
+    const key=norm(recipe.name);
+    if(existing.has(key))continue;
+    existing.add(key);
+    DATA.recipes.push({...recipe,id:next++});
+    adjunctAdded++;
+  }
   for(const recipe of payload.recipes){
     const key=norm(recipe.name);
     if(existing.has(key))continue;
@@ -36,11 +44,12 @@ window.WHB_V5_READY=(async()=>{
   }
   addMissingOptions('#base',DATA.recipes.map(r=>r.base));
   addMissingOptions('#tag',DATA.recipes.flatMap(r=>r.tags||[]));
+  window.WHB_ADJUNCT_BRIDGE_ADDED=adjunctAdded;
   window.WHB_V5_ADDED=added;
-  document.dispatchEvent(new CustomEvent('whb:v5-ready',{detail:{added}}));
-  return {added};
+  document.dispatchEvent(new CustomEvent('whb:v5-ready',{detail:{added,adjunctAdded}}));
+  return {added,adjunctAdded};
 })().catch(error=>{
   console.error('Wright Home Bar v5 data load failed',error);
-  return {added:0,error:String(error)};
+  return {added:0,adjunctAdded:0,error:String(error)};
 });
 })();
