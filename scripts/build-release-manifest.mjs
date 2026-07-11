@@ -4,6 +4,15 @@ import zlib from 'node:zlib';
 
 const root = process.cwd();
 globalThis.window = globalThis;
+globalThis.window.addEventListener = () => {};
+globalThis.document = {
+  querySelector: () => null,
+  querySelectorAll: () => [],
+  getElementById: () => null,
+  createElement: () => ({ style: {}, appendChild: () => {}, setAttribute: () => {} }),
+  head: { appendChild: () => {} },
+  body: { appendChild: () => {} }
+};
 globalThis.WHB_RECIPE_CHUNKS = [];
 
 function run(path) {
