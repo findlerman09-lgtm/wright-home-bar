@@ -11,6 +11,11 @@ async function loadPayload(){
   const stream=new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));
   return JSON.parse(await new Response(stream).text());
 }
+function addMissingOptions(selector,values){
+  const element=document.querySelector(selector);if(!element)return;
+  const present=new Set([...element.options].map(x=>x.value));
+  for(const value of [...new Set(values)].filter(Boolean).sort())if(!present.has(value))element.insertAdjacentHTML('beforeend',`<option>${value}</option>`);
+}
 window.WHB_V5_READY=(async()=>{
   const payload=await loadPayload();
   const catalog=window.WHB_INGREDIENT_CATALOG||[];
@@ -29,6 +34,8 @@ window.WHB_V5_READY=(async()=>{
     DATA.recipes.push({...recipe,id:next++,strength:recipe.strength||((recipe.tags||[]).includes('Spirit Forward')||(recipe.tags||[]).includes('Strong')?'Strong':(recipe.tags||[]).includes('Low ABV')?'Light':'Medium')});
     added++;
   }
+  addMissingOptions('#base',DATA.recipes.map(r=>r.base));
+  addMissingOptions('#tag',DATA.recipes.flatMap(r=>r.tags||[]));
   window.WHB_V5_ADDED=added;
   document.dispatchEvent(new CustomEvent('whb:v5-ready',{detail:{added}}));
   return {added};
