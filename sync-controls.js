@@ -46,7 +46,26 @@ async function copySyncJson(){const text=JSON.stringify(syncPayload(),null,2);tr
 function renderSync(){if(!$('#syncText'))return;const p=syncPayload();$('#syncText').value=JSON.stringify(p,null,2);$('#syncSummary').textContent=`${p.summary.owned} owned · ${p.summary.low} low · ${p.summary.empty} empty · ${p.summary.wishlist} wishlist`;
   $('#syncShopping').innerHTML=p.shopping.slice(0,20).map(x=>`<div class="sync-shopping-row"><b>${x.name}</b><span>${x.stock==='wishlist'?'Wishlist':x.stock==='empty'?'Empty':'Not owned'} · unlocks ${x.recipes_unlocked_if_added}</span></div>`).join('')||'<p>No shopping items are currently flagged.</p>';
 }
+function setRecipeVisibility(show){
+  const grid=$('#recipeGrid'),head=grid?.previousElementSibling,button=$('#toggleRecipes');
+  if(!grid||!button)return;
+  grid.hidden=!show;
+  if(head)head.classList.toggle('recipes-collapsed',!show);
+  button.textContent=show?'Hide recipes':'Show recipes';
+  button.setAttribute('aria-expanded',String(show));
+  localStorage.setItem('whb_show_recipes',show?'1':'0');
+}
+function installRecipeToggle(){
+  const actions=document.querySelector('#recipes .actions');
+  if(!actions||$('#toggleRecipes'))return;
+  const button=document.createElement('button');
+  button.id='toggleRecipes';button.className='alt';button.type='button';
+  button.onclick=()=>setRecipeVisibility($('#recipeGrid').hidden);
+  actions.prepend(button);
+  setRecipeVisibility(localStorage.getItem('whb_show_recipes')==='1');
+}
 window.exportSyncJson=exportSyncJson;window.exportSyncCsv=exportSyncCsv;window.copySyncJson=copySyncJson;window.renderSync=renderSync;
 const originalSwitch=window.switchView;window.switchView=function(id){originalSwitch(id);if(id==='sync')renderSync()};
 $('#exportSyncJson')?.addEventListener('click',exportSyncJson);$('#exportSyncCsv')?.addEventListener('click',exportSyncCsv);$('#copySyncJson')?.addEventListener('click',copySyncJson);$('#refreshSync')?.addEventListener('click',renderSync);
+installRecipeToggle();
 })();
